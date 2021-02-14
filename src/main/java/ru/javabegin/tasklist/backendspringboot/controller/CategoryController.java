@@ -1,14 +1,16 @@
 package ru.javabegin.tasklist.backendspringboot.controller;
 
 
-import org.aspectj.weaver.ArrayReferenceType;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.javabegin.tasklist.backendspringboot.entity.CategoryEntity;
 import ru.javabegin.tasklist.backendspringboot.repo.CategoryRepos;
+import ru.javabegin.tasklist.backendspringboot.search.CategorySearchValues;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/category") // default point
@@ -24,8 +26,8 @@ public class CategoryController {
 
     // End Point GET ==> http://localhost:8080/category/all
     @GetMapping("/all")
-    public List<CategoryEntity> test() {
-        return categoryRepos.findAll();
+    public List<CategoryEntity> findAll() {
+        return categoryRepos.findAllByOrderByTitleAsc();
     }
 
     // End Point POST ==>
@@ -52,6 +54,34 @@ public class CategoryController {
             return new ResponseEntity("missed param: title", HttpStatus.NOT_ACCEPTABLE);
         }
         return ResponseEntity.ok(categoryRepos.save(category));
+    }
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<CategoryEntity> findById(@PathVariable Long id) {
+        CategoryEntity category;
+        try {
+            category = categoryRepos.findById(id).get();
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+            return new ResponseEntity("id=" + id + " not found", HttpStatus.NOT_ACCEPTABLE);
+        }
+        return ResponseEntity.ok(category);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity delete(@PathVariable Long id) {
+        try {
+            categoryRepos.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            e.printStackTrace();
+            return new ResponseEntity("id=" + id + " not found", HttpStatus.NOT_ACCEPTABLE);
+        }
+        return new ResponseEntity("Category delete successful " + id, HttpStatus.OK);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<List<CategoryEntity>> search(@RequestBody CategorySearchValues categorySearchValues) {
+        return ResponseEntity.ok(categoryRepos.findByTitle(categorySearchValues.getText()));
     }
 
 }
