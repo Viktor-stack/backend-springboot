@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.javabegin.tasklist.backendspringboot.entity.PriorityEntity;
 import ru.javabegin.tasklist.backendspringboot.repo.PriorityRepository;
 import ru.javabegin.tasklist.backendspringboot.search.PrioritySearchValue;
+import ru.javabegin.tasklist.backendspringboot.utill.MyLoader;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -24,11 +25,13 @@ public class PriorityController {
 
     @GetMapping("/all")
     public List<PriorityEntity> findAll() {
+        MyLoader.printText("PriorityController: findAll()------------------------------------------------------------");
         return priorityRepository.findAllByOrderByIdAsc();
     }
 
     @PostMapping("/add")
     public ResponseEntity<PriorityEntity> add(@RequestBody PriorityEntity priority) {
+        MyLoader.printText("PriorityController: add()------------------------------------------------------------");
         // значение ID не должно быть пучтым
         if (priority.getId() != null && priority.getId() != 0) {
             return new ResponseEntity("redundant param: id MIST be Null", HttpStatus.NOT_ACCEPTABLE);
@@ -46,6 +49,7 @@ public class PriorityController {
 
     @PutMapping("/update")
     public ResponseEntity update(@RequestBody PriorityEntity priority) {
+        MyLoader.printText("PriorityController: update()-------------------------------------------------------------");
         // значение ID не должно быть пучтым
         if (priority.getId() == null || priority.getId() == 0) {
             return new ResponseEntity("redundant param: id MIST be Null", HttpStatus.NOT_ACCEPTABLE);
@@ -63,6 +67,7 @@ public class PriorityController {
 
     @GetMapping("/id/{id}")
     public ResponseEntity<PriorityEntity> findById(@PathVariable Long id) {
+        MyLoader.printText("PriorityController: findById()-----------------------------------------------------------");
         PriorityEntity priority;
         try {
             priority = priorityRepository.findById(id).get();
@@ -75,6 +80,7 @@ public class PriorityController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
+        MyLoader.printText("PriorityController: delete()-------------------------------------------------------------");
         try {
             priorityRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
@@ -86,6 +92,7 @@ public class PriorityController {
 
     @PostMapping()
     public ResponseEntity<List<PriorityEntity>> search(@RequestBody PrioritySearchValue prioritySearchValue) {
+        MyLoader.printText("PriorityController: search()-------------------------------------------------------------");
         return ResponseEntity.ok(priorityRepository.findByTitle(prioritySearchValue.getTest()));
     }
 

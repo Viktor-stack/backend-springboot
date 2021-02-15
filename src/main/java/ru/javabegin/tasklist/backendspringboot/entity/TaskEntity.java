@@ -3,6 +3,7 @@ package ru.javabegin.tasklist.backendspringboot.entity;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -40,7 +41,7 @@ public class TaskEntity {
     }
 
     @Basic
-    @Column(name = "date")
+    @Column(name = "date", updatable = true)
     public Date getDate() {
         return date;
     }
